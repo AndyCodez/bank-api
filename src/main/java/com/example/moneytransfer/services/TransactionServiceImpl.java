@@ -36,16 +36,18 @@ public class TransactionServiceImpl implements TransactionService {
             Account sourceAccount = optionalSourceAccount.get();
             Account targetAccount = optionalTargetAccount.get();
 
-            if (sourceAccount.getBalance().compareTo(amount) >= 0) {
-                sourceAccount.setBalance(sourceAccount.getBalance().subtract(amount));
-                targetAccount.setBalance(targetAccount.getBalance().add(amount));
+            synchronized (sourceAccount) {
+                if (sourceAccount.getBalance().compareTo(amount) >= 0) {
+                    sourceAccount.setBalance(sourceAccount.getBalance().subtract(amount));
+                    targetAccount.setBalance(targetAccount.getBalance().add(amount));
 
-                this.accountRepository.save(sourceAccount);
-                this.accountRepository.save(targetAccount);
+                    this.accountRepository.save(sourceAccount);
+                    this.accountRepository.save(targetAccount);
 
-                return transactionRepository.save(transaction);
-            } else {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Insufficient funds");
+                    return transactionRepository.save(transaction);
+                } else {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Insufficient funds");
+                }
             }
 
         } else {
