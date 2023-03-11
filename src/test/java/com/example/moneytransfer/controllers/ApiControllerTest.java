@@ -109,7 +109,12 @@ class ApiControllerTest {
                         .content(requestBody);
 
         mockMvc.perform(request)
-                .andExpect(status().isCreated());
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").exists())
+                .andExpect(jsonPath("$.amount").exists())
+                .andExpect(jsonPath("$.sourceAccountId").exists())
+                .andExpect(jsonPath("$.targetAccountId").exists())
+                .andExpect(jsonPath("$.dateTime").exists());
 
         Account sourceAccountAfter = this.accountRepository.findById(sourceAccount.getId()).get();
         Account targetAccountAfter = this.accountRepository.findById(targetAccount.getId()).get();

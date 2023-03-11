@@ -4,17 +4,24 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
+@Valid
 public class Transaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @NotBlank(message = "source account ID is required")
     private Long sourceAccountId;
+    @NotBlank(message = "target account ID is required")
     private Long targetAccountId;
+    @NotBlank(message = "amount is required")
     private BigDecimal amount;
     private LocalDateTime dateTime;
 
