@@ -16,6 +16,8 @@ public class Account {
     private String name;
     private BigDecimal balance;
 
+    public Account() {}
+
     public Account(String name, BigDecimal balance) {
         this.name = name;
         this.balance = balance;

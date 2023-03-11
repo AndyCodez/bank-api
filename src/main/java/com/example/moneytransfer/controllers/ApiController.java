@@ -19,4 +19,9 @@ public class ApiController {
         return this.accountService.createAccount(account);
     }
 
+    @GetMapping("/accounts/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public Account findAccount(@PathVariable Long id) {
+        return this.accountService.findAccount(id);
+    }
 }
