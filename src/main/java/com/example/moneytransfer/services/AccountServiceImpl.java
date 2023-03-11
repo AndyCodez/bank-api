@@ -3,9 +3,11 @@ package com.example.moneytransfer.services;
 import com.example.moneytransfer.data.entities.Account;
 import com.example.moneytransfer.data.repositories.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
-import java.math.BigDecimal;
+import java.util.Optional;
 
 @Service
 public class AccountServiceImpl implements AccountService{
@@ -18,6 +20,11 @@ public class AccountServiceImpl implements AccountService{
 
     @Override
     public Account findAccount(Long accountId) {
-        return this.accountRepository.findById(accountId).get();
+        Optional<Account> account = this.accountRepository.findById(accountId);
+        if (account.isPresent()) {
+            return account.get();
+        } else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Account not found");
+        }
     }
 }

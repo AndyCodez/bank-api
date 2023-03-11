@@ -57,15 +57,28 @@ class ApiControllerTest {
 
     @Test
     void canRetrieveAccountInformation() throws Exception {
+        this.accountRepository.deleteAll();
         Account account = new Account("Janet Doe", new BigDecimal(300));
         this.accountRepository.save(account);
 
-        RequestBuilder request = MockMvcRequestBuilders.get("/accounts/"+ 1);
+        RequestBuilder request = MockMvcRequestBuilders.get("/accounts/"+ account.getId());
 
         mockMvc.perform(request)
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("Janet Doe"))
                 .andExpect(jsonPath("$.balance").value(300));
+    }
+
+    @Test
+    void returnsA404ResponseIfRequestedResourceMissing() throws Exception {
+        this.accountRepository.deleteAll();
+
+        RequestBuilder request = MockMvcRequestBuilders.get("/accounts/"+ 1);
+
+        mockMvc.perform(request)
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.name").doesNotExist())
+                .andExpect(jsonPath("$.message").value("Account not found"));
     }
 
 }
