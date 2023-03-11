@@ -24,6 +24,11 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public Transaction transferMoney(Transaction transaction) {
         BigDecimal amount = transaction.getAmount();
+
+        if (amount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Transfer amount must be greater than zero");
+        }
+
         Optional<Account> optionalSourceAccount = this.accountRepository.findById(transaction.getSourceAccountId());
         Optional<Account> optionalTargetAccount = this.accountRepository.findById(transaction.getTargetAccountId());
 

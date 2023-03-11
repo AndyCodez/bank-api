@@ -117,4 +117,26 @@ class ApiControllerTest {
         assertEquals(new BigDecimal("8000.00"), sourceAccountAfter.getBalance());
         assertEquals(new BigDecimal("5000.00"), targetAccountAfter.getBalance());
     }
+
+    @Test
+    void transferAmountMustBeGreaterThanZero () throws Exception {
+        Account sourceAccount = new Account("James Bond", new BigDecimal(10000));
+        Account targetAccount = new Account("Jill Bond", new BigDecimal(3000));
+        this.accountRepository.save(sourceAccount);
+        this.accountRepository.save(targetAccount);
+
+        Transaction transaction = new Transaction(sourceAccount.getId(), targetAccount.getId(), new BigDecimal(0));
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String requestBody = objectMapper.writeValueAsString(transaction);
+
+        RequestBuilder request =
+                MockMvcRequestBuilders.post("/transfers")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody);
+
+        mockMvc.perform(request)
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value( "Transfer amount must be greater than zero"));
+    }
 }
