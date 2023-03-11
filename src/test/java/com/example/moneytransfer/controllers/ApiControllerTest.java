@@ -1,11 +1,16 @@
 package com.example.moneytransfer.controllers;
 
 import com.example.moneytransfer.data.entities.Account;
+import com.example.moneytransfer.data.entities.Transaction;
 import com.example.moneytransfer.data.repositories.AccountRepository;
+import com.example.moneytransfer.data.repositories.TransactionRepository;
 import com.example.moneytransfer.services.AccountService;
 import com.example.moneytransfer.services.AccountServiceImpl;
+import com.example.moneytransfer.services.TransactionService;
+import com.example.moneytransfer.services.TransactionServiceImpl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
@@ -19,6 +24,7 @@ import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
@@ -35,6 +41,10 @@ class ApiControllerTest {
 
     @Autowired
     private AccountRepository accountRepository;
+
+    @Autowired
+    private TransactionRepository transactionRepository;
+
 
     @Test
     void canCreateANewAccount() throws Exception {
@@ -81,4 +91,30 @@ class ApiControllerTest {
                 .andExpect(jsonPath("$.message").value("Account not found"));
     }
 
+    @Test
+    void can_TransferMoneyFromOneAccountToAnother() throws Exception {
+        Account sourceAccount = new Account("James Bond", new BigDecimal(10000));
+        Account targetAccount = new Account("Jill Bond", new BigDecimal(3000));
+        this.accountRepository.save(sourceAccount);
+        this.accountRepository.save(targetAccount);
+
+        Transaction transaction = new Transaction(sourceAccount.getId(), targetAccount.getId(), new BigDecimal(2000));
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String requestBody = objectMapper.writeValueAsString(transaction);
+
+        RequestBuilder request =
+                MockMvcRequestBuilders.post("/transfers")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody);
+
+        mockMvc.perform(request)
+                .andExpect(status().isCreated());
+
+        Account sourceAccountAfter = this.accountRepository.findById(sourceAccount.getId()).get();
+        Account targetAccountAfter = this.accountRepository.findById(targetAccount.getId()).get();
+
+        assertEquals(new BigDecimal("8000.00"), sourceAccountAfter.getBalance());
+        assertEquals(new BigDecimal("5000.00"), targetAccountAfter.getBalance());
+    }
 }
