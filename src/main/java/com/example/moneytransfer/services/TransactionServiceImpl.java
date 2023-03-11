@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -44,6 +45,7 @@ public class TransactionServiceImpl implements TransactionService {
                     this.accountRepository.save(sourceAccount);
                     this.accountRepository.save(targetAccount);
 
+                    transaction.setDateTime(LocalDateTime.now());
                     return transactionRepository.save(transaction);
                 } else {
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Insufficient funds");
