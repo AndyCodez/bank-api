@@ -1,5 +1,6 @@
 package com.example.moneytransfer.controllers;
 
+import com.example.moneytransfer.payloads.AuthRequest;
 import com.example.moneytransfer.payloads.AuthResponse;
 import com.example.moneytransfer.payloads.RegistrationRequest;
 import com.example.moneytransfer.services.AuthService;
@@ -24,5 +25,10 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> registerUser(@RequestBody RegistrationRequest request) {
         return ResponseEntity.ok(this.authService.registerUser(request));
+    }
+
+    @PostMapping("/authenticate")
+    public ResponseEntity<AuthResponse> authenticateUser(@RequestBody AuthRequest request) throws Exception {
+        return ResponseEntity.ok(this.authService.authenticateUser(request));
     }
 }
