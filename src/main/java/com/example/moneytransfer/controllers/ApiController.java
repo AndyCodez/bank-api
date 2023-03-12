@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 @RestController
-@RequestMapping("/")
+@RequestMapping("/api/v1")
 public class ApiController {
 
     @Autowired
