@@ -1,6 +1,6 @@
 package com.example.moneytransfer.controllers;
 
-import com.example.moneytransfer.data.entities.User;
+import com.example.moneytransfer.payloads.AuthResponse;
 import com.example.moneytransfer.payloads.RegistrationRequest;
 import com.example.moneytransfer.services.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +22,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<User> registerUser(@RequestBody RegistrationRequest request) {
+    public ResponseEntity<AuthResponse> registerUser(@RequestBody RegistrationRequest request) {
         return ResponseEntity.ok(this.authService.registerUser(request));
     }
 }
