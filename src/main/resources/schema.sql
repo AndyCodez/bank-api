@@ -1,4 +1,13 @@
-CREATE TABLE account (
-  name VARCHAR(255),
-  balance DECIMAL(10, 2)
-);
+--CREATE TABLE account (
+--  name VARCHAR(255),
+--  balance DECIMAL(10, 2)
+--);
+--
+--create table user (
+--   id bigint not null,
+--    email varchar(255),
+--    password varchar(255),
+--    role varchar(255),
+--    username varchar(255),
+--    primary key (id)
+--);
