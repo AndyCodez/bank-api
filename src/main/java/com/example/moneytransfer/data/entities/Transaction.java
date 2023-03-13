@@ -17,11 +17,11 @@ public class Transaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @NotBlank(message = "source account ID is required")
+    @NotNull(message = "source account ID is required")
     private Long sourceAccountId;
-    @NotBlank(message = "target account ID is required")
+    @NotNull(message = "target account ID is required")
     private Long targetAccountId;
-    @NotBlank(message = "amount is required")
+    @NotNull(message = "amount is required")
     private BigDecimal amount;
     private LocalDateTime dateTime;
 
