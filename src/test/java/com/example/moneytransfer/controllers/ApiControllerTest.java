@@ -1,13 +1,19 @@
 package com.example.moneytransfer.controllers;
 
 import com.example.moneytransfer.data.entities.Account;
+import com.example.moneytransfer.data.entities.Role;
 import com.example.moneytransfer.data.entities.Transaction;
+import com.example.moneytransfer.data.entities.User;
 import com.example.moneytransfer.data.repositories.AccountRepository;
 import com.example.moneytransfer.data.repositories.TransactionRepository;
+import com.example.moneytransfer.data.repositories.UserRepository;
+import com.example.moneytransfer.payloads.AuthRequest;
+import com.example.moneytransfer.payloads.AuthResponse;
 import com.example.moneytransfer.services.AccountService;
 import com.example.moneytransfer.services.AccountServiceImpl;
 import com.example.moneytransfer.services.TransactionService;
 import com.example.moneytransfer.services.TransactionServiceImpl;
+import com.example.moneytransfer.utils.JwtUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
@@ -18,13 +24,16 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MockMvcBuilder;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
@@ -45,6 +54,11 @@ class ApiControllerTest {
     @Autowired
     private TransactionRepository transactionRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private JwtUtil jwtUtil;
 
     @Test
     void canCreateANewAccount() throws Exception {
@@ -55,14 +69,16 @@ class ApiControllerTest {
 
         RequestBuilder request =
                 MockMvcRequestBuilders
-                        .post("/accounts")
+                        .post("/api/v1/accounts")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(requestBody);
+                        .content(requestBody)
+                        .header("Authorization", "Bearer " + getJwtToken());
 
         mockMvc.perform(request)
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.name").value("Jane Doe"));
 
+        this.userRepository.deleteAll();
     }
 
     @Test
@@ -71,24 +87,34 @@ class ApiControllerTest {
         Account account = new Account("Janet Doe", new BigDecimal(300));
         this.accountRepository.save(account);
 
-        RequestBuilder request = MockMvcRequestBuilders.get("/accounts/"+ account.getId());
+        RequestBuilder request =
+                MockMvcRequestBuilders
+                        .get("/api/v1/accounts/"+ account.getId())
+                        .header("Authorization", "Bearer " + getJwtToken());
 
         mockMvc.perform(request)
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("Janet Doe"))
                 .andExpect(jsonPath("$.balance").value(300));
+        this.userRepository.deleteAll();
+
     }
 
     @Test
     void returnsA404ResponseIfRequestedResourceMissing() throws Exception {
         this.accountRepository.deleteAll();
 
-        RequestBuilder request = MockMvcRequestBuilders.get("/accounts/"+ 1);
+        RequestBuilder request =
+                MockMvcRequestBuilders
+                        .get("/api/v1/accounts/"+ 1)
+                        .header("Authorization", "Bearer " + getJwtToken());
 
         mockMvc.perform(request)
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.name").doesNotExist())
                 .andExpect(jsonPath("$.message").value("Account not found"));
+        this.userRepository.deleteAll();
+
     }
 
     @Test
@@ -104,9 +130,10 @@ class ApiControllerTest {
         String requestBody = objectMapper.writeValueAsString(transaction);
 
         RequestBuilder request =
-                MockMvcRequestBuilders.post("/transfers")
+                MockMvcRequestBuilders.post("/api/v1/transfers")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(requestBody);
+                        .content(requestBody)
+                        .header("Authorization", "Bearer " + getJwtToken());
 
         mockMvc.perform(request)
                 .andExpect(status().isCreated())
@@ -121,6 +148,8 @@ class ApiControllerTest {
 
         assertEquals(new BigDecimal("8000.00"), sourceAccountAfter.getBalance());
         assertEquals(new BigDecimal("5000.00"), targetAccountAfter.getBalance());
+        this.userRepository.deleteAll();
+
     }
 
     @Test
@@ -136,12 +165,21 @@ class ApiControllerTest {
         String requestBody = objectMapper.writeValueAsString(transaction);
 
         RequestBuilder request =
-                MockMvcRequestBuilders.post("/transfers")
+                MockMvcRequestBuilders.post("/api/v1/transfers")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(requestBody);
+                        .content(requestBody)
+                        .header("Authorization", "Bearer " + getJwtToken());
 
         mockMvc.perform(request)
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value( "Transfer amount must be greater than zero"));
+        this.userRepository.deleteAll();
+
+    }
+
+    private String getJwtToken() throws Exception {
+        User client = new User("Testing Client", "pass123", Role.USER);
+        String jwtToken = jwtUtil.generateToken(this.userRepository.save(client));
+        return jwtToken;
     }
 }
