@@ -34,3 +34,6 @@ build/
 
 ### Configs
 application.properties
+
+### Logs
+money-transfer.log
