@@ -17,6 +17,7 @@ import com.example.moneytransfer.utils.JwtUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
@@ -60,6 +61,10 @@ class ApiControllerTest {
     @Autowired
     private JwtUtil jwtUtil;
 
+    @AfterEach
+    void tearDown() {
+        this.userRepository.deleteAll();
+    }
     @Test
     void canCreateANewAccount() throws Exception {
         Account account = new Account("Jane Doe", new BigDecimal(300));
@@ -77,8 +82,6 @@ class ApiControllerTest {
         mockMvc.perform(request)
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.name").value("Jane Doe"));
-
-        this.userRepository.deleteAll();
     }
 
     @Test
@@ -96,8 +99,6 @@ class ApiControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("Janet Doe"))
                 .andExpect(jsonPath("$.balance").value(300));
-        this.userRepository.deleteAll();
-
     }
 
     @Test
@@ -113,8 +114,6 @@ class ApiControllerTest {
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.name").doesNotExist())
                 .andExpect(jsonPath("$.message").value("Account not found"));
-        this.userRepository.deleteAll();
-
     }
 
     @Test
@@ -148,8 +147,6 @@ class ApiControllerTest {
 
         assertEquals(new BigDecimal("8000.00"), sourceAccountAfter.getBalance());
         assertEquals(new BigDecimal("5000.00"), targetAccountAfter.getBalance());
-        this.userRepository.deleteAll();
-
     }
 
     @Test
@@ -173,8 +170,6 @@ class ApiControllerTest {
         mockMvc.perform(request)
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value( "Transfer amount must be greater than zero"));
-        this.userRepository.deleteAll();
-
     }
 
     private String getJwtToken() throws Exception {
