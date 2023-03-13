@@ -6,9 +6,7 @@ import com.example.moneytransfer.data.repositories.AccountRepository;
 import com.example.moneytransfer.data.repositories.TransactionRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -18,13 +16,16 @@ import java.util.Optional;
 
 @Service
 public class TransactionServiceImpl implements TransactionService {
-    private final Logger logger = LoggerFactory.getLogger(AccountServiceImpl.class);
+    private final Logger logger = LoggerFactory.getLogger(TransactionServiceImpl.class);
 
-    @Autowired
-    private AccountRepository accountRepository;
+    private final AccountRepository accountRepository;
+    private final TransactionRepository transactionRepository;
 
-    @Autowired
-    private TransactionRepository transactionRepository;
+    public TransactionServiceImpl(AccountRepository accountRepository, TransactionRepository transactionRepository) {
+        this.accountRepository = accountRepository;
+        this.transactionRepository = transactionRepository;
+    }
+
     @Override
     public Transaction transferMoney(Transaction transaction) {
         logger.trace("transferMoney");
