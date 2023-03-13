@@ -16,10 +16,15 @@ import org.springframework.web.server.ResponseStatusException;
 public class ApiController {
 
     @Autowired
-    private AccountService accountService;
+    private final AccountService accountService;
 
     @Autowired
-    private TransactionService transactionService;
+    private final TransactionService transactionService;
+
+    public ApiController(AccountService accountService, TransactionService transactionService) {
+        this.accountService = accountService;
+        this.transactionService = transactionService;
+    }
 
     @PostMapping("/accounts")
     @ResponseStatus(HttpStatus.CREATED)
