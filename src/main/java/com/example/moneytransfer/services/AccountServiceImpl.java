@@ -21,7 +21,7 @@ public class AccountServiceImpl implements AccountService{
 
     @Override
     public Account createAccount(Account account) {
-        logger.trace("Find account");
+        logger.trace("Create account");
 
         return this.accountRepository.save(account);
     }
