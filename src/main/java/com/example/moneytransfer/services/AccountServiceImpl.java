@@ -2,6 +2,8 @@ package com.example.moneytransfer.services;
 
 import com.example.moneytransfer.data.entities.Account;
 import com.example.moneytransfer.data.repositories.AccountRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -11,15 +13,20 @@ import java.util.Optional;
 
 @Service
 public class AccountServiceImpl implements AccountService{
+    private final Logger logger = LoggerFactory.getLogger(AccountServiceImpl.class);
     @Autowired
     private AccountRepository accountRepository;
     @Override
     public Account createAccount(Account account) {
+        logger.trace("Find account");
+
         return this.accountRepository.save(account);
     }
 
     @Override
     public Account findAccount(Long accountId) {
+        logger.trace("Find account");
+
         Optional<Account> account = this.accountRepository.findById(accountId);
         if (account.isPresent()) {
             return account.get();

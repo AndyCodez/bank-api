@@ -7,6 +7,8 @@ import com.example.moneytransfer.payloads.AuthRequest;
 import com.example.moneytransfer.payloads.AuthResponse;
 import com.example.moneytransfer.payloads.RegistrationRequest;
 import com.example.moneytransfer.utils.JwtUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -16,6 +18,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class AuthService {
+
+    private final Logger logger = LoggerFactory.getLogger(AccountServiceImpl.class);
 
     @Autowired
     private final UserRepository userRepository;
@@ -34,11 +38,14 @@ public class AuthService {
     }
 
     public AuthResponse registerUser(RegistrationRequest request) {
+        logger.trace("registerUser");
         User user = new User(request.getUsername(), passwordEncoder.encode(request.getPassword()), Role.USER);
         return new AuthResponse(jwtUtil.generateToken(this.userRepository.save(user)));
     }
 
     public AuthResponse authenticateUser(AuthRequest request) throws Exception {
+        logger.trace("authenticateUser");
+
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
                 new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword());
         try {

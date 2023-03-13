@@ -4,6 +4,8 @@ import com.example.moneytransfer.data.entities.Account;
 import com.example.moneytransfer.data.entities.Transaction;
 import com.example.moneytransfer.data.repositories.AccountRepository;
 import com.example.moneytransfer.data.repositories.TransactionRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -16,6 +18,7 @@ import java.util.Optional;
 
 @Service
 public class TransactionServiceImpl implements TransactionService {
+    private final Logger logger = LoggerFactory.getLogger(AccountServiceImpl.class);
 
     @Autowired
     private AccountRepository accountRepository;
@@ -24,6 +27,8 @@ public class TransactionServiceImpl implements TransactionService {
     private TransactionRepository transactionRepository;
     @Override
     public Transaction transferMoney(Transaction transaction) {
+        logger.trace("transferMoney");
+
         BigDecimal amount = transaction.getAmount();
 
         if (amount.compareTo(BigDecimal.ZERO) <= 0) {
