@@ -4,7 +4,6 @@ import com.example.moneytransfer.payloads.AuthRequest;
 import com.example.moneytransfer.payloads.AuthResponse;
 import com.example.moneytransfer.payloads.RegistrationRequest;
 import com.example.moneytransfer.services.AuthService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,8 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/auth")
 public class AuthController {
-
-    @Autowired
     private final AuthService authService;
 
     public AuthController(AuthService authService) {

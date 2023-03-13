@@ -5,7 +5,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
@@ -32,7 +31,6 @@ public class Transaction {
         this.sourceAccountId = sourceAccountId;
         this.targetAccountId = targetAccountId;
         this.amount = amount;
-        this.dateTime = dateTime;
     }
 
     public Long getId() {
