@@ -21,3 +21,6 @@ jwt.secret-key=217A25432A462D4A614E635266556A586E3272357538782F413F4428472B4B62
 ### Logging
 logging.level.root=INFO
 logging.level.com.example=TRACE
+
+### Actuator
+management.endpoints.web.exposure.include=health,info
