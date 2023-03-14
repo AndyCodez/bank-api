@@ -12,9 +12,9 @@ The API includes the following endpoints:
 
 `POST /api/v1/transfers`: Transfers money from one account to another.
 
-`POST /api/v1/register`: Generates a JWT access token for a user.
+`POST /api/v1/auth/register`: Generates a JWT access token for a user.
 
-`POST /api/v1/authenticate`: Authenticates user and responds with a JWT access token.
+`POST /api/v1/auth/authenticate`: Authenticates user and responds with a JWT access token.
 
 The API enforces the following constraints:
 
@@ -72,10 +72,40 @@ docker run -p 8080:8080 money-transfer-0.0.1.jar
 ## Authentication and Authorization
 
 The API is stateless and uses JWT for authentication and authorization. 
-To authenticate, clients must send a POST request to `/api/v1/authenticate` with a valid username and password. 
+To authenticate, clients must send a POST request to `/api/v1/auth/authenticate` with a valid username and password. 
+
+```
+POST /api/v1/auth/authenticate
+
+Content-Type: application/json
+
+{
+  "username": "your-username",
+  "password": "your-password"
+}
+```
 The API will respond with a JWT access token, which clients must include in the Authorization header of all subsequent requests.
 
+```
+HTTP/1.1 200 OK
+
+Content-Type: application/json
+
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+```
+
 By default, the API is configured to use the HS256 algorithm to sign and verify JWT tokens.
+
+## Health Checks and Monitoring
+The API also includes Spring Boot Actuator for health checks and monitoring. The following endpoints are available:
+
+`/actuator/health`: Returns the health status of the application.
+
+`/actuator/info`: Returns custom application information (configured in application.properties).
+
+By default, these endpoints are only available to authenticated clients.
 
 ## Testing
 To run the tests, you can use the following command:
