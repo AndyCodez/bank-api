@@ -12,9 +12,9 @@ The API includes the following endpoints:
 
 `POST /api/v1/transfers`: Transfers money from one account to another.
 
-`POST /api/v1/register`: Generates a JWT access token for a user.
+`POST /api/v1/auth/register`: Generates a JWT access token for a user.
 
-`POST /api/v1/authenticate`: Authenticates user and responds with a JWT access token.
+`POST /api/v1/auth/authenticate`: Authenticates user and responds with a JWT access token.
 
 The API enforces the following constraints:
 
